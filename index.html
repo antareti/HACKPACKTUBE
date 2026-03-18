@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>HACKPACKTUBE | PRIVATE TERMINAL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --neon-blue: #0088ff;
+            --bg: #020205;
+            --surface: #0a0e1a;
+            --hot-red: #ff0044;
+            --glow: 0 0 15px rgba(0, 136, 255, 0.4);
+        }
+
+        body { background: var(--bg); color: #c0d0ff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* HEADER */
+        header { 
+            height: 65px; 
+            background: var(--surface); 
+            border-bottom: 2px solid var(--neon-blue); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 25px; 
+            box-shadow: var(--glow); 
+            z-index: 1000; 
+        }
+        .logo { font-size: 26px; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); cursor: pointer; letter-spacing: 1px; }
+
+        .wrapper { display: flex; flex: 1; overflow: hidden; }
+        
+        /* SIDEBAR */
+        nav { width: 260px; background: var(--surface); padding: 20px 0; border-right: 1px solid rgba(0, 136, 255, 0.1); }
+        .nav-link { padding: 15px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s; font-weight: 600; font-size: 15px; }
+        .nav-link:hover, .nav-link.active { background: rgba(0, 136, 255, 0.1); color: var(--neon-blue); box-shadow: inset 4px 0 0 var(--neon-blue); }
+
+        /* MAIN CONTENT */
+        main { flex: 1; padding: 30px; overflow-y: auto; background: radial-gradient(circle at top, #001a33, #020205); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+
+        .channel-info { display: none; margin-bottom: 40px; border-bottom: 1px solid rgba(0, 136, 255, 0.2); padding-bottom: 20px; }
+        .banner { height: 200px; border-radius: 15px; background: linear-gradient(135deg, #000 0%, #004488 100%); display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; margin-bottom: 20px; border: 1px solid var(--neon-blue); text-shadow: 0 0 20px #000; }
+        
+        /* VIDEO CARDS */
+        .v-card { cursor: pointer; transition: 0.3s; position: relative; }
+        .v-card:hover { transform: translateY(-5px); }
+        .v-thumb { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; border: 1px solid #222; overflow: hidden; position: relative; }
+        .v-thumb img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .v-card:hover .v-thumb img { filter: brightness(1.2); }
+        .v-title { margin-top: 12px; font-size: 15px; font-weight: bold; color: #fff; line-height: 1.4; }
+
+        .badge-18 { position: absolute; bottom: 8px; right: 8px; background: var(--hot-red); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 900; box-shadow: 0 0 10px var(--hot-red); z-index: 5; }
+
+        /* PLAYER OVERLAY */
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
+        iframe { width: 85%; height: 80%; border: 2px solid var(--neon-blue); box-shadow: 0 0 40px rgba(0,136,255,0.3); }
+        .close-btn { margin-bottom: 20px; color: var(--neon-blue); cursor: pointer; font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="toggleView('home')">HACKPACKTUBE</div>
+        <div style="color:var(--hot-red); font-weight:bold; font-size: 14px;"><i class="fas fa-radiation"></i> SESSION: UNRESTRICTED</div>
+    </header>
+
+    <div class="wrapper">
+        <nav>
+            <div class="nav-link active" id="nav-home" onclick="toggleView('home')"><i class="fas fa-th-large"></i> Главная</div>
+            <div class="nav-link" id="nav-chan" onclick="toggleView('chan')"><i class="fas fa-user-shield"></i> Мой канал</div>
+            <div class="nav-link"><i class="fas fa-fire"></i> Популярное</div>
+        </nav>
+
+        <main>
+            <div id="channel-header" class="channel-info">
+                <div class="banner">BITSNIFFER // PRIVATE DATABASE</div>
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <div style="width:80px; height:80px; border-radius:50%; background:var(--neon-blue); display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; color:#000; box-shadow: var(--glow);">B</div>
+                    <div>
+                        <h2 style="margin:0;">bitsniffer</h2>
+                        <span style="color:var(--neon-blue); font-size:14px;">142 файла • Доступ: FULL</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid" id="main-grid"></div>
+        </main>
+    </div>
+
+    <div id="overlay">
+        <div class="close-btn" onclick="closePlayer()">[ ЗАКРЫТЬ СЕССИЮ X ]</div>
+        <div id="player-container" style="width:100%; display:flex; justify-content:center;"></div>
+    </div>
+
+    <script>
+        // Данные для главной (обычные видео)
+        const homeVideos = [
+            {id:'dQw4w9WgXcQ', t:'System Update 2.0', v:'1.2M'},
+            {id:'jfKfPfyJRdk', t:'Global Network Traffic', v:'450K'},
+            {id:'kJQP7kiw5Fk', t:'AI Evolution Report', v:'89K'},
+            {id:'V-_O7nl0Ii0', t:'Cyber Security 2026', v:'12K'},
+            {id:'y6120QOlsfU', t:'Encrypted Data Flow', v:'34K'},
+            {id:'_u7Md_glvYQ', t:'Darknet Archives', v:'56K'}
+        ];
+
+        // Ваши личные видео + Тематические +18
+        const chanVideos = [
+            {id:'QmAsV7s4u8s', t:'[LOCAL] My Project A', v:'22K'},
+            {id:'VGeR7DH1yHU', t:'[LOCAL] Test Stream', v:'15K'},
+            {id:'HMszxROyqB8', t:'[LOCAL] Build Log', v:'40K'},
+            // Раздел +18 с интригующей тематикой
+            {id:'p_8_vN7rX60', t:'PRIVATE: Neon Night Aesthetics', v:'200K', x:true, thumb:'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&fit=crop'},
+            {id:'r6-N-pW3t_M', t:'RESTRICTED: Late Night Pulse', v:'150K', x:true, thumb:'https://images.unsplash.com/photo-1514525253344-99a6d30086bb?q=80&w=600&fit=crop'},
+            {id:'h7GyMId8oXY', t:'VIP: Forbidden Terminal Session', v:'310K', x:true, thumb:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&fit=crop'},
+            {id:'6RtTyWFAgO8', t:'UNCENSORED: Dark City Vibes', v:'88K', x:true, thumb:'https://images.unsplash.com/photo-1595760780346-f972eb49709f?q=80&w=600&fit=crop'},
+            {id:'7GrlpIKyyDo', t:'HOT: Electronic Body Music', v:'125K', x:true, thumb:'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?q=80&w=600&fit=crop'},
+            {id:'LGxDSFKmw00', t:'SECRET: After Hours Leak', v:'95K', x:true, thumb:'https://images.unsplash.com/photo-1516035039355-67433572a8b3?q=80&w=600&fit=crop'}
+        ];
+
+        function toggleView(mode) {
+            const grid = document.getElementById('main-grid');
+            const head = document.getElementById('channel-header');
+            grid.innerHTML = '';
+            
+            document.getElementById('nav-home').classList.remove('active');
+            document.getElementById('nav-chan').classList.remove('active');
+
+            if(mode === 'home') {
+                head.style.display = 'none';
+                document.getElementById('nav-home').classList.add('active');
+                // Генерируем 18 карточек для главной
+                for(let i=0; i<18; i++) {
+                    let v = homeVideos[i % homeVideos.length];
+                    grid.innerHTML += createCard(v.id, v.t, v.v);
+                }
+            } else {
+                head.style.display = 'block';
+                document.getElementById('nav-chan').classList.add('active');
+                // Показываем ваш канал
+                chanVideos.forEach(v => {
+                    grid.innerHTML += createCard(v.id, v.t, v.v, v.x, v.thumb);
+                });
+            }
+        }
+
+        function createCard(id, t, v, x = false, customThumb = null) {
+            const thumbUrl = customThumb ? customThumb : `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+            return `
+                <div class="v-card" onclick="playVideo('${id}')">
+                    <div class="v-thumb">
+                        <img src="${thumbUrl}">
+                        ${x ? '<div class="badge-18">18+</div>' : ''}
+                    </div>
+                    <div class="v-title">${t}</div>
+                    <div style="font-size:12px; color:rgba(255,255,255,0.4); margin-top:5px;">${v} просмотров • 2 часа назад</div>
+                </div>
+            `;
+        }
+
+        function playVideo(id) {
+            document.getElementById('player-container').innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            document.getElementById('overlay').style.display = 'flex';
+        }
+
+        function closePlayer() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('player-container').innerHTML = '';
+        }
+
+        window.onload = () => toggleView('home');
+    </script>
+</body>
+</html>
