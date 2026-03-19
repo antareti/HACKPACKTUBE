@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --accent: #ff9900; /* Классический оранжевый */
+            --accent: #ff9900;
             --bg: #000000;
             --surface: #1b1b1b;
             --text-main: #ffffff;
@@ -44,7 +44,6 @@
             padding: 0 25px; box-shadow: var(--glow); z-index: 1000; 
         }
 
-        /* LOGO STYLE */
         .logo { font-size: 26px; font-weight: 900; color: #000; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .logo span:first-child { color: #fff; }
         .logo span:last-child { background: var(--accent); padding: 2px 6px; border-radius: 4px; }
@@ -63,85 +62,54 @@
             gap: 25px; contain: content;
         }
 
-        /* --- ОБНОВЛЕННАЯ 3D ШАПКА --- */
+        /* 3D ШАПКА */
         .channel-info { display: none; margin-bottom: 30px; perspective: 1000px; }
-        
         .banner-3d { 
             height: 220px; width: 100%; background: radial-gradient(circle at center, #222 0%, #000 100%); 
             border-radius: 15px; position: relative; overflow: hidden; 
             border: 1px solid #333; box-shadow: inset 0 0 50px rgba(0,0,0,1);
             display: flex; align-items: center; justify-content: center;
         }
-
-        /* Эффект сетки в перспективе */
         .grid-3d {
             position: absolute; width: 200%; height: 200%; top: -20%; left: -50%;
-            background-image: 
-                linear-gradient(var(--accent) 1px, transparent 1px), 
-                linear-gradient(90deg, var(--accent) 1px, transparent 1px);
-            background-size: 50px 50px; 
-            transform: rotateX(70deg) translateZ(-100px); 
-            animation: moveGrid 8s linear infinite; 
-            opacity: 0.15;
+            background-image: linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+            background-size: 50px 50px; transform: rotateX(70deg) translateZ(-100px); 
+            animation: moveGrid 8s linear infinite; opacity: 0.15;
             mask-image: linear-gradient(to top, rgba(0,0,0,1), transparent);
         }
-
-        /* 3D Текст с тенями */
         .banner-title { 
-            font-size: clamp(30px, 6vw, 60px); 
-            font-weight: 900; 
-            color: #fff; 
-            letter-spacing: 8px; 
-            text-transform: uppercase;
-            position: relative;
-            z-index: 10;
-            transform-style: preserve-3d;
-            animation: floating 4s ease-in-out infinite;
-            /* Эффект многослойного 3D текста */
-            text-shadow: 
-                0 1px 0 #ccc, 0 2px 0 #c5c5c5, 0 3px 0 #bbb, 0 4px 0 #b0b0b0, 
-                0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 
-                0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 
-                0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15),
-                0 0 30px var(--accent);
+            font-size: clamp(30px, 6vw, 60px); font-weight: 900; color: #fff; letter-spacing: 8px; text-transform: uppercase;
+            position: relative; z-index: 10; transform-style: preserve-3d; animation: floating 4s ease-in-out infinite;
+            text-shadow: 0 1px 0 #ccc, 0 2px 0 #c5c5c5, 0 5px 10px rgba(0,0,0,.25), 0 0 30px var(--accent);
         }
 
-        @keyframes moveGrid { 
-            from { transform: rotateX(70deg) translateY(0); } 
-            to { transform: rotateX(70deg) translateY(50px); } 
-        }
+        @keyframes moveGrid { from { transform: rotateX(70deg) translateY(0); } to { transform: rotateX(70deg) translateY(50px); } }
+        @keyframes floating { 0%, 100% { transform: translateY(0) rotateX(5deg); } 50% { transform: translateY(-15px) rotateX(-5deg); } }
 
-        @keyframes floating {
-            0%, 100% { transform: translateY(0) rotateX(5deg); }
-            50% { transform: translateY(-15px) rotateX(-5deg); }
-        }
-        /* --- КОНЕЦ ОБНОВЛЕНИЯ ШАПКИ --- */
-
-        /* Карточки видео */
-        .v-card { 
-            cursor: pointer; position: relative; transition: 0.3s;
-            content-visibility: auto; contain-intrinsic-size: 200px;
-        }
+        /* КАРТОЧКИ С ЭФФЕКТОМ СКРЫТОГО КОНТЕНТА */
+        .v-card { cursor: pointer; position: relative; transition: 0.3s; }
         .v-card:hover { transform: translateY(-5px); }
         .v-thumb { 
             width: 100%; aspect-ratio: 16/9; background: #1a1a1a; border-radius: 10px; 
             border: 1px solid #333; overflow: hidden; position: relative;
         }
-        .v-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .v-title { margin-top: 10px; font-size: 14px; font-weight: bold; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .v-thumb img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s ease; }
+        
+        /* Автоматический блюр для видео с пометкой +18 */
+        .v-card.is-x .v-thumb img { filter: blur(20px) grayscale(0.5); }
+        .v-card.is-x:hover .v-thumb img { filter: blur(0) grayscale(0); }
 
+        .v-title { margin-top: 10px; font-size: 14px; font-weight: bold; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .badge-18 { position: absolute; bottom: 8px; right: 8px; background: var(--accent); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; z-index: 5; }
 
         /* PLAYER OVERLAY */
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(10px); }
         .player-wrapper { width: 95%; max-width: 1100px; aspect-ratio: 16/9; border: 2px solid var(--accent); background: #000; box-shadow: 0 0 50px rgba(255,153,0,0.2); }
         iframe { width: 100%; height: 100%; border: none; }
-        .close-btn { margin-bottom: 10px; color: var(--accent); cursor: pointer; font-size: 16px; font-weight: bold; background: rgba(255,153,0,0.1); padding: 5px 15px; border-radius: 20px; transition: 0.2s; }
-        .close-btn:hover { background: var(--accent); color: #000; }
-
+        .close-btn { margin-bottom: 10px; color: var(--accent); cursor: pointer; font-size: 16px; font-weight: bold; background: rgba(255,153,0,0.1); padding: 5px 15px; border-radius: 20px; }
+        
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
     </style>
 </head>
 <body>
@@ -177,7 +145,6 @@
 
     <script>
         const config = { homeCount: 1500, chanCount: 500 };
-        
         const homeVideos = [
             {id:'dQw4w9WgXcQ', t:'System Update 2.0'}, {id:'jfKfPfyJRdk', t:'Global Traffic Analysis'},
             {id:'kJQP7kiw5Fk', t:'AI Evolution Report'}, {id:'V-_O7nl0Ii0', t:'Cyber Security 2026'},
@@ -195,10 +162,8 @@
             const grid = document.getElementById('main-grid');
             const head = document.getElementById('channel-header');
             const mainScroll = document.getElementById('main-scroll');
-            
             grid.innerHTML = '';
             mainScroll.scrollTop = 0;
-            
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
 
             if(mode === 'home') {
@@ -217,11 +182,9 @@
             for(let i=0; i<count; i++) {
                 const v = data[i % data.length];
                 const card = document.createElement('div');
-                card.className = 'v-card';
+                card.className = v.x ? 'v-card is-x' : 'v-card';
                 card.onclick = () => playVideo(v.id);
-                
                 const thumb = v.thumb ? v.thumb : `https://img.youtube.com/vi/${v.id}/mqdefault.jpg`;
-                
                 card.innerHTML = `
                     <div class="v-thumb">
                         <img src="${thumb}" loading="lazy">
@@ -230,10 +193,6 @@
                     <div class="v-title">${v.t} #${i+1}</div>
                 `;
                 fragment.appendChild(card);
-                
-                if (i % 100 === 0 && i !== 0) {
-                    container.appendChild(fragment);
-                }
             }
             container.appendChild(fragment);
         }
