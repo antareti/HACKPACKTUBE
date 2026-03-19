@@ -6,22 +6,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --neon-blue: #0088ff;
-            --bg: #020205;
-            --surface: #0a0e1a;
-            --hot-red: #ff0044;
-            --glow: 0 0 15px rgba(0, 136, 255, 0.4);
+            --accent: #ff9900; /* Классический оранжевый */
+            --bg: #000000;
+            --surface: #1b1b1b;
+            --text-main: #ffffff;
+            --text-dim: #b2b2b2;
+            --glow: 0 0 15px rgba(255, 153, 0, 0.3);
         }
 
-        /* Оптимизация рендеринга */
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         
         body { 
-            background: var(--bg); color: #c0d0ff; font-family: 'Segoe UI', sans-serif; 
+            background: var(--bg); color: var(--text-main); font-family: 'Segoe UI', Arial, sans-serif; 
             margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; 
         }
 
-        /* 3D фоны - используем transform: translateZ(0) для ускорения GPU */
         .bg-shapes {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: -1; transform: translateZ(0);
@@ -29,7 +28,7 @@
 
         .cube {
             position: absolute; width: 60px; height: 60px;
-            border: 1px solid rgba(0, 136, 255, 0.1);
+            border: 1px solid rgba(255, 153, 0, 0.1);
             animation: rotateCube 25s infinite linear;
             will-change: transform;
         }
@@ -40,20 +39,25 @@
         }
         
         header { 
-            height: 65px; background: var(--surface); border-bottom: 2px solid var(--neon-blue); 
+            height: 65px; background: var(--surface); border-bottom: 2px solid var(--accent); 
             display: flex; align-items: center; justify-content: space-between; 
             padding: 0 25px; box-shadow: var(--glow); z-index: 1000; 
         }
 
+        /* LOGO STYLE */
+        .logo { font-size: 26px; font-weight: 900; color: #000; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .logo span:first-child { color: #fff; }
+        .logo span:last-child { background: var(--accent); padding: 2px 6px; border-radius: 4px; }
+
         .wrapper { display: flex; flex: 1; overflow: hidden; }
         
-        nav { width: 260px; background: var(--surface); border-right: 1px solid rgba(0, 136, 255, 0.1); z-index: 10; }
-        .nav-link { padding: 15px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; font-weight: 600; }
-        .nav-link:hover, .nav-link.active { background: rgba(0, 136, 255, 0.1); color: var(--neon-blue); box-shadow: inset 4px 0 0 var(--neon-blue); }
+        nav { width: 260px; background: var(--surface); border-right: 1px solid rgba(255, 255, 255, 0.05); z-index: 10; }
+        .nav-link { padding: 15px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; font-weight: 600; color: var(--text-dim); }
+        .nav-link:hover, .nav-link.active { background: rgba(255, 153, 0, 0.1); color: var(--accent); }
+        .nav-link.active { box-shadow: inset 4px 0 0 var(--accent); }
 
-        main { flex: 1; padding: 20px; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+        main { flex: 1; padding: 20px; overflow-y: auto; position: relative; scroll-behavior: smooth; background: #0f0f0f; }
         
-        /* Grid-контейнер с оптимизацией */
         .grid { 
             display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
             gap: 25px; contain: content;
@@ -63,42 +67,44 @@
         .channel-info { display: none; margin-bottom: 30px; }
         .banner-3d { 
             height: 200px; width: 100%; background: #000; border-radius: 15px; 
-            position: relative; overflow: hidden; border: 1px solid var(--neon-blue);
+            position: relative; overflow: hidden; border: 1px solid #333;
         }
         .grid-3d {
             position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
-            background-image: linear-gradient(var(--neon-blue) 1px, transparent 1px), linear-gradient(90deg, var(--neon-blue) 1px, transparent 1px);
-            background-size: 40px 40px; transform: rotateX(60deg); animation: moveGrid 10s linear infinite; opacity: 0.1;
+            background-image: linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+            background-size: 40px 40px; transform: rotateX(60deg); animation: moveGrid 10s linear infinite; opacity: 0.05;
             will-change: transform;
         }
         @keyframes moveGrid { from { transform: rotateX(60deg) translateY(0); } to { transform: rotateX(60deg) translateY(40px); } }
         
         .banner-content { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 5; }
-        .banner-title { font-size: clamp(30px, 5vw, 50px); font-weight: 900; color: #fff; letter-spacing: 10px; text-shadow: 0 0 20px var(--neon-blue); }
+        .banner-title { font-size: clamp(30px, 5vw, 50px); font-weight: 900; color: #fff; letter-spacing: 5px; text-shadow: 0 0 20px rgba(0,0,0,0.8); }
 
-        /* Карточки видео - используем content-visibility для скорости */
+        /* Карточки видео */
         .v-card { 
             cursor: pointer; position: relative; transition: 0.3s;
             content-visibility: auto; contain-intrinsic-size: 200px;
         }
-        .v-card:hover { transform: scale(1.03); }
+        .v-card:hover { transform: translateY(-5px); }
         .v-thumb { 
-            width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 10px; 
-            border: 1px solid #222; overflow: hidden; position: relative;
+            width: 100%; aspect-ratio: 16/9; background: #1a1a1a; border-radius: 10px; 
+            border: 1px solid #333; overflow: hidden; position: relative;
         }
         .v-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .v-title { margin-top: 10px; font-size: 14px; font-weight: bold; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .v-title { margin-top: 10px; font-size: 14px; font-weight: bold; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .badge-18 { position: absolute; bottom: 8px; right: 8px; background: var(--hot-red); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 5; }
+        .badge-18 { position: absolute; bottom: 8px; right: 8px; background: var(--accent); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; z-index: 5; }
 
         /* PLAYER OVERLAY */
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(10px); }
-        .player-wrapper { width: 90%; max-width: 900px; aspect-ratio: 16/9; border: 2px solid var(--neon-blue); background: #000; box-shadow: 0 0 40px rgba(0,136,255,0.3); }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(10px); }
+        .player-wrapper { width: 95%; max-width: 1100px; aspect-ratio: 16/9; border: 2px solid var(--accent); background: #000; box-shadow: 0 0 50px rgba(255,153,0,0.2); }
         iframe { width: 100%; height: 100%; border: none; }
-        .close-btn { margin-bottom: 10px; color: var(--neon-blue); cursor: pointer; font-size: 16px; font-weight: bold; }
+        .close-btn { margin-bottom: 10px; color: var(--accent); cursor: pointer; font-size: 16px; font-weight: bold; background: rgba(255,153,0,0.1); padding: 5px 15px; border-radius: 20px; transition: 0.2s; }
+        .close-btn:hover { background: var(--accent); color: #000; }
 
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 10px; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
     </style>
 </head>
 <body>
@@ -106,21 +112,21 @@
     <div class="bg-shapes" id="bg-layer"></div>
 
     <header>
-        <div class="logo" onclick="toggleView('home')">HACKPACKTUBE</div>
-        <div style="color:var(--hot-red); font-weight:bold; font-size: 13px;"><i class="fas fa-microchip"></i> SYSTEM: OPTIMIZED</div>
+        <div class="logo" onclick="toggleView('home')"><span>HACKPACK</span><span>TUBE</span></div>
+        <div style="color:var(--accent); font-weight:bold; font-size: 13px;"><i class="fas fa-crown"></i> PREMIUM TERMINAL</div>
     </header>
 
     <div class="wrapper">
         <nav>
-            <div class="nav-link active" id="nav-home" onclick="toggleView('home')"><i class="fas fa-th-large"></i> Главная</div>
-            <div class="nav-link" id="nav-chan" onclick="toggleView('chan')"><i class="fas fa-user-shield"></i> Мой канал (+18)</div>
+            <div class="nav-link active" id="nav-home" onclick="toggleView('home')"><i class="fas fa-home"></i> Главная</div>
+            <div class="nav-link" id="nav-chan" onclick="toggleView('chan')"><i class="fas fa-video"></i> Мой канал (+18)</div>
         </nav>
 
         <main id="main-scroll">
             <div id="channel-header" class="channel-info">
                 <div class="banner-3d">
                     <div class="grid-3d"></div>
-                    <div class="banner-content"><div class="banner-title">BITSNIFFER</div></div>
+                    <div class="banner-content"><div class="banner-title">BITSNIFFER <span style="color:var(--accent)">PRO</span></div></div>
                 </div>
             </div>
             <div class="grid" id="main-grid"></div>
@@ -128,7 +134,7 @@
     </div>
 
     <div id="overlay">
-        <div class="close-btn" onclick="closePlayer()">[ CLOSE X ]</div>
+        <div class="close-btn" onclick="closePlayer()">[ ЗАКРЫТЬ X ]</div>
         <div class="player-wrapper" id="player-container"></div>
     </div>
 
@@ -136,16 +142,16 @@
         const config = { homeCount: 1500, chanCount: 500 };
         
         const homeVideos = [
-            {id:'dQw4w9WgXcQ', t:'System Update 2.0'}, {id:'jfKfPfyJRdk', t:'Global Traffic'},
-            {id:'kJQP7kiw5Fk', t:'AI Report'}, {id:'V-_O7nl0Ii0', t:'Cyber 2026'},
-            {id:'y6120QOlsfU', t:'Data Flow'}, {id:'_u7Md_glvYQ', t:'Darknet Archives'}
+            {id:'dQw4w9WgXcQ', t:'System Update 2.0'}, {id:'jfKfPfyJRdk', t:'Global Traffic Analysis'},
+            {id:'kJQP7kiw5Fk', t:'AI Evolution Report'}, {id:'V-_O7nl0Ii0', t:'Cyber Security 2026'},
+            {id:'y6120QOlsfU', t:'Encrypted Data Flow'}, {id:'_u7Md_glvYQ', t:'Darknet Archives'}
         ];
 
         const chanVideos = [
-            {id:'p_8_vN7rX60', t:'PRIVATE: Neon', x:true, thumb:'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400'},
-            {id:'r6-N-pW3t_M', t:'RESTRICTED: Pulse', x:true, thumb:'https://images.unsplash.com/photo-1514525253344-99a6d30086bb?w=400'},
-            {id:'h7GyMId8oXY', t:'VIP: Forbidden', x:true, thumb:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400'},
-            {id:'6RtTyWFAgO8', t:'UNCENSORED: Vibes', x:true, thumb:'https://images.unsplash.com/photo-1595760780346-f972eb49709f?w=400'}
+            {id:'p_8_vN7rX60', t:'PRIVATE: Neon City After Dark', x:true, thumb:'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400'},
+            {id:'r6-N-pW3t_M', t:'RESTRICTED: Pulse Midnight', x:true, thumb:'https://images.unsplash.com/photo-1514525253344-99a6d30086bb?w=400'},
+            {id:'h7GyMId8oXY', t:'VIP: Forbidden Session', x:true, thumb:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400'},
+            {id:'6RtTyWFAgO8', t:'UNCENSORED: Urban Night', x:true, thumb:'https://images.unsplash.com/photo-1595760780346-f972eb49709f?w=400'}
         ];
 
         function toggleView(mode) {
@@ -169,7 +175,6 @@
             }
         }
 
-        // Оптимизированный рендеринг через фрагменты
         function renderBatch(container, data, count) {
             const fragment = document.createDocumentFragment();
             for(let i=0; i<count; i++) {
@@ -189,7 +194,6 @@
                 `;
                 fragment.appendChild(card);
                 
-                // Чтобы не вешать браузер, отрисовываем пачками по 100
                 if (i % 100 === 0 && i !== 0) {
                     container.appendChild(fragment);
                 }
@@ -207,7 +211,6 @@
             document.getElementById('player-container').innerHTML = '';
         }
 
-        // Создаем фоновые фигуры один раз
         window.onload = () => {
             const bg = document.getElementById('bg-layer');
             for(let i=0; i<5; i++) {
