@@ -53,10 +53,22 @@
 
         .badge-18 { position: absolute; bottom: 8px; right: 8px; background: var(--hot-red); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 900; box-shadow: 0 0 10px var(--hot-red); z-index: 5; }
 
-        /* PLAYER OVERLAY */
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
-        iframe { width: 85%; height: 80%; border: 2px solid var(--neon-blue); box-shadow: 0 0 40px rgba(0,136,255,0.3); }
-        .close-btn { margin-bottom: 20px; color: var(--neon-blue); cursor: pointer; font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        /* PLAYER OVERLAY (FIXED SIZE) */
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
+        
+        .player-wrapper { 
+            width: 90%; 
+            max-width: 1000px; /* Стандартный размер для видео */
+            aspect-ratio: 16/9; 
+            position: relative; 
+            border: 2px solid var(--neon-blue); 
+            box-shadow: 0 0 50px rgba(0,136,255,0.4); 
+            background: #000;
+        }
+
+        iframe { width: 100%; height: 100%; border: none; }
+        .close-btn { margin-bottom: 15px; color: var(--neon-blue); cursor: pointer; font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        .close-btn:hover { color: #fff; text-shadow: 0 0 10px var(--neon-blue); }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 10px; }
@@ -93,11 +105,10 @@
 
     <div id="overlay">
         <div class="close-btn" onclick="closePlayer()">[ ЗАКРЫТЬ СЕССИЮ X ]</div>
-        <div id="player-container" style="width:100%; display:flex; justify-content:center;"></div>
+        <div class="player-wrapper" id="player-container"></div>
     </div>
 
     <script>
-        // Данные для главной (обычные видео)
         const homeVideos = [
             {id:'dQw4w9WgXcQ', t:'System Update 2.0', v:'1.2M'},
             {id:'jfKfPfyJRdk', t:'Global Network Traffic', v:'450K'},
@@ -107,12 +118,10 @@
             {id:'_u7Md_glvYQ', t:'Darknet Archives', v:'56K'}
         ];
 
-        // Ваши личные видео + Тематические +18
         const chanVideos = [
             {id:'QmAsV7s4u8s', t:'[LOCAL] My Project A', v:'22K'},
             {id:'VGeR7DH1yHU', t:'[LOCAL] Test Stream', v:'15K'},
             {id:'HMszxROyqB8', t:'[LOCAL] Build Log', v:'40K'},
-            // Раздел +18 с интригующей тематикой
             {id:'p_8_vN7rX60', t:'PRIVATE: Neon Night Aesthetics', v:'200K', x:true, thumb:'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&fit=crop'},
             {id:'r6-N-pW3t_M', t:'RESTRICTED: Late Night Pulse', v:'150K', x:true, thumb:'https://images.unsplash.com/photo-1514525253344-99a6d30086bb?q=80&w=600&fit=crop'},
             {id:'h7GyMId8oXY', t:'VIP: Forbidden Terminal Session', v:'310K', x:true, thumb:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&fit=crop'},
@@ -132,7 +141,6 @@
             if(mode === 'home') {
                 head.style.display = 'none';
                 document.getElementById('nav-home').classList.add('active');
-                // Генерируем 18 карточек для главной
                 for(let i=0; i<18; i++) {
                     let v = homeVideos[i % homeVideos.length];
                     grid.innerHTML += createCard(v.id, v.t, v.v);
@@ -140,7 +148,6 @@
             } else {
                 head.style.display = 'block';
                 document.getElementById('nav-chan').classList.add('active');
-                // Показываем ваш канал
                 chanVideos.forEach(v => {
                     grid.innerHTML += createCard(v.id, v.t, v.v, v.x, v.thumb);
                 });
@@ -162,7 +169,7 @@
         }
 
         function playVideo(id) {
-            document.getElementById('player-container').innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            document.getElementById('player-container').innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
             document.getElementById('overlay').style.display = 'flex';
         }
 
