@@ -13,163 +13,114 @@
             --glow: 0 0 15px rgba(0, 136, 255, 0.4);
         }
 
+        /* Оптимизация рендеринга */
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        
         body { 
-            background: var(--bg); 
-            color: #c0d0ff; 
-            font-family: 'Segoe UI', sans-serif; 
-            margin: 0; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; 
-            perspective: 1500px;
+            background: var(--bg); color: #c0d0ff; font-family: 'Segoe UI', sans-serif; 
+            margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; 
         }
 
-        /* 3D BACKGROUND DECORATION */
+        /* 3D фоны - используем transform: translateZ(0) для ускорения GPU */
         .bg-shapes {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            overflow: hidden;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1; transform: translateZ(0);
         }
 
         .cube {
-            position: absolute;
-            width: 100px; height: 100px;
+            position: absolute; width: 60px; height: 60px;
             border: 1px solid rgba(0, 136, 255, 0.1);
-            transform-style: preserve-3d;
-            animation: rotateCube 20s infinite linear;
+            animation: rotateCube 25s infinite linear;
+            will-change: transform;
         }
 
         @keyframes rotateCube {
-            from { transform: rotateX(0) rotateY(0) translateZ(-500px); }
-            to { transform: rotateX(360deg) rotateY(360deg) translateZ(-200px); }
+            from { transform: rotate(0deg) scale(1); }
+            to { transform: rotate(360deg) scale(1.2); }
         }
         
-        /* HEADER */
         header { 
-            height: 65px; 
-            background: var(--surface); 
-            border-bottom: 2px solid var(--neon-blue); 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 0 25px; 
-            box-shadow: var(--glow); 
-            z-index: 1000; 
+            height: 65px; background: var(--surface); border-bottom: 2px solid var(--neon-blue); 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 25px; box-shadow: var(--glow); z-index: 1000; 
         }
-        .logo { font-size: 26px; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); cursor: pointer; letter-spacing: 1px; }
 
         .wrapper { display: flex; flex: 1; overflow: hidden; }
         
-        /* SIDEBAR */
-        nav { width: 260px; background: var(--surface); padding: 20px 0; border-right: 1px solid rgba(0, 136, 255, 0.1); z-index: 10; }
-        .nav-link { padding: 15px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s; font-weight: 600; font-size: 15px; }
+        nav { width: 260px; background: var(--surface); border-right: 1px solid rgba(0, 136, 255, 0.1); z-index: 10; }
+        .nav-link { padding: 15px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; font-weight: 600; }
         .nav-link:hover, .nav-link.active { background: rgba(0, 136, 255, 0.1); color: var(--neon-blue); box-shadow: inset 4px 0 0 var(--neon-blue); }
 
-        /* MAIN CONTENT */
-        main { flex: 1; padding: 30px; overflow-y: auto; background: transparent; position: relative; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; transform-style: preserve-3d; }
+        main { flex: 1; padding: 20px; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+        
+        /* Grid-контейнер с оптимизацией */
+        .grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 25px; contain: content;
+        }
 
-        /* 3D CHANNEL INFO */
-        .channel-info { display: none; margin-bottom: 40px; transform-style: preserve-3d; }
+        /* 3D Шапка канала */
+        .channel-info { display: none; margin-bottom: 30px; }
         .banner-3d { 
-            height: 250px; 
-            width: 100%; 
-            background: #000; 
-            border-radius: 20px; 
-            position: relative; 
-            overflow: hidden; 
-            border: 1px solid var(--neon-blue);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            height: 200px; width: 100%; background: #000; border-radius: 15px; 
+            position: relative; overflow: hidden; border: 1px solid var(--neon-blue);
         }
         .grid-3d {
             position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
             background-image: linear-gradient(var(--neon-blue) 1px, transparent 1px), linear-gradient(90deg, var(--neon-blue) 1px, transparent 1px);
-            background-size: 40px 40px; transform: rotateX(65deg); animation: moveGrid 15s linear infinite; opacity: 0.2;
+            background-size: 40px 40px; transform: rotateX(60deg); animation: moveGrid 10s linear infinite; opacity: 0.1;
+            will-change: transform;
         }
-        @keyframes moveGrid { from { transform: rotateX(65deg) translateY(0); } to { transform: rotateX(65deg) translateY(40px); } }
+        @keyframes moveGrid { from { transform: rotateX(60deg) translateY(0); } to { transform: rotateX(60deg) translateY(40px); } }
         
-        .floating-elements {
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-            display: flex; justify-content: space-around; align-items: center; pointer-events: none;
-        }
-        .float-box {
-            width: 60px; height: 60px; border: 2px solid var(--neon-blue);
-            animation: float 4s ease-in-out infinite; opacity: 0.5;
-        }
-        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-20px) rotate(45deg); } }
+        .banner-content { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 5; }
+        .banner-title { font-size: clamp(30px, 5vw, 50px); font-weight: 900; color: #fff; letter-spacing: 10px; text-shadow: 0 0 20px var(--neon-blue); }
 
-        .banner-content { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5; }
-        .banner-title { font-size: 60px; font-weight: 900; color: #fff; letter-spacing: 12px; text-shadow: 0 0 30px var(--neon-blue); }
-
-        /* VIDEO CARDS 3D EFFECT */
+        /* Карточки видео - используем content-visibility для скорости */
         .v-card { 
-            cursor: pointer; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            position: relative; transform-style: preserve-3d;
+            cursor: pointer; position: relative; transition: 0.3s;
+            content-visibility: auto; contain-intrinsic-size: 200px;
         }
-        .v-card:hover { transform: translateZ(30px) rotateX(5deg) rotateY(-5deg); }
+        .v-card:hover { transform: scale(1.03); }
         .v-thumb { 
-            width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; 
+            width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 10px; 
             border: 1px solid #222; overflow: hidden; position: relative;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
         .v-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .v-title { margin-top: 12px; font-size: 15px; font-weight: bold; color: #fff; }
+        .v-title { margin-top: 10px; font-size: 14px; font-weight: bold; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .badge-18 { position: absolute; bottom: 8px; right: 8px; background: var(--hot-red); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; box-shadow: 0 0 10px var(--hot-red); z-index: 5; }
+        .badge-18 { position: absolute; bottom: 8px; right: 8px; background: var(--hot-red); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 5; }
 
-        /* PLAYER */
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(8px); }
-        .player-wrapper { width: 90%; max-width: 1000px; aspect-ratio: 16/9; border: 2px solid var(--neon-blue); box-shadow: 0 0 60px rgba(0,136,255,0.5); background: #000; }
+        /* PLAYER OVERLAY */
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(10px); }
+        .player-wrapper { width: 90%; max-width: 900px; aspect-ratio: 16/9; border: 2px solid var(--neon-blue); background: #000; box-shadow: 0 0 40px rgba(0,136,255,0.3); }
         iframe { width: 100%; height: 100%; border: none; }
-        .close-btn { margin-bottom: 15px; color: var(--neon-blue); cursor: pointer; font-size: 18px; font-weight: bold; text-transform: uppercase; }
+        .close-btn { margin-bottom: 10px; color: var(--neon-blue); cursor: pointer; font-size: 16px; font-weight: bold; }
 
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="bg-shapes">
-        <div class="cube" style="top: 10%; left: 5%;"></div>
-        <div class="cube" style="top: 70%; left: 85%; animation-delay: -5s;"></div>
-        <div class="cube" style="top: 40%; left: 40%; width: 50px; height: 50px; animation-duration: 30s;"></div>
-    </div>
+    <div class="bg-shapes" id="bg-layer"></div>
 
     <header>
         <div class="logo" onclick="toggleView('home')">HACKPACKTUBE</div>
-        <div style="color:var(--hot-red); font-weight:bold; font-size: 14px;"><i class="fas fa-radiation"></i> SESSION: UNRESTRICTED</div>
+        <div style="color:var(--hot-red); font-weight:bold; font-size: 13px;"><i class="fas fa-microchip"></i> SYSTEM: OPTIMIZED</div>
     </header>
 
     <div class="wrapper">
         <nav>
             <div class="nav-link active" id="nav-home" onclick="toggleView('home')"><i class="fas fa-th-large"></i> Главная</div>
             <div class="nav-link" id="nav-chan" onclick="toggleView('chan')"><i class="fas fa-user-shield"></i> Мой канал (+18)</div>
-            <div class="nav-link"><i class="fas fa-fire"></i> Популярное</div>
         </nav>
 
-        <main>
+        <main id="main-scroll">
             <div id="channel-header" class="channel-info">
                 <div class="banner-3d">
                     <div class="grid-3d"></div>
-                    <div class="floating-elements">
-                        <div class="float-box" style="animation-delay: 0s"></div>
-                        <div class="float-box" style="animation-delay: 1s"></div>
-                        <div class="float-box" style="animation-delay: 2s"></div>
-                    </div>
-                    <div class="banner-content">
-                        <div class="banner-title">BITSNIFFER</div>
-                        <div style="color:var(--neon-blue); font-weight:bold; letter-spacing:5px;">3D PRIVATE INTERFACE</div>
-                    </div>
-                </div>
-                <div style="display:flex; align-items:center; gap:20px; padding: 10px;">
-                    <div style="width:70px; height:70px; border-radius:12px; background:linear-gradient(45deg, #000, var(--neon-blue)); border:2px solid var(--neon-blue); display:flex; align-items:center; justify-content:center; font-size:35px; font-weight:bold; color:#fff; box-shadow: var(--glow);">B</div>
-                    <div>
-                        <h2 style="margin:0;">bitsniffer_admin</h2>
-                        <span style="color:var(--neon-blue); font-size:14px;"><i class="fas fa-cube"></i> High-End Encryption • 2000+ Files</span>
-                    </div>
+                    <div class="banner-content"><div class="banner-title">BITSNIFFER</div></div>
                 </div>
             </div>
             <div class="grid" id="main-grid"></div>
@@ -177,72 +128,77 @@
     </div>
 
     <div id="overlay">
-        <div class="close-btn" onclick="closePlayer()">[ ЗАКРЫТЬ СЕССИЮ X ]</div>
+        <div class="close-btn" onclick="closePlayer()">[ CLOSE X ]</div>
         <div class="player-wrapper" id="player-container"></div>
     </div>
 
     <script>
+        const config = { homeCount: 1500, chanCount: 500 };
+        
         const homeVideos = [
-            {id:'dQw4w9WgXcQ', t:'System Update 2.0', v:'1.2M'},
-            {id:'jfKfPfyJRdk', t:'Global Network Traffic', v:'450K'},
-            {id:'kJQP7kiw5Fk', t:'AI Evolution Report', v:'89K'},
-            {id:'V-_O7nl0Ii0', t:'Cyber Security 2026', v:'12K'},
-            {id:'y6120QOlsfU', t:'Encrypted Data Flow', v:'34K'},
-            {id:'_u7Md_glvYQ', t:'Darknet Archives', v:'56K'}
+            {id:'dQw4w9WgXcQ', t:'System Update 2.0'}, {id:'jfKfPfyJRdk', t:'Global Traffic'},
+            {id:'kJQP7kiw5Fk', t:'AI Report'}, {id:'V-_O7nl0Ii0', t:'Cyber 2026'},
+            {id:'y6120QOlsfU', t:'Data Flow'}, {id:'_u7Md_glvYQ', t:'Darknet Archives'}
         ];
 
         const chanVideos = [
-            {id:'p_8_vN7rX60', t:'PRIVATE: Neon Aesthetics', v:'200K', x:true, thumb:'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&fit=crop'},
-            {id:'r6-N-pW3t_M', t:'RESTRICTED: Late Night', v:'150K', x:true, thumb:'https://images.unsplash.com/photo-1514525253344-99a6d30086bb?q=80&w=600&fit=crop'},
-            {id:'h7GyMId8oXY', t:'VIP: Forbidden terminal', v:'310K', x:true, thumb:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&fit=crop'},
-            {id:'6RtTyWFAgO8', t:'UNCENSORED: Vibes', v:'88K', x:true, thumb:'https://images.unsplash.com/photo-1595760780346-f972eb49709f?q=80&w=600&fit=crop'}
+            {id:'p_8_vN7rX60', t:'PRIVATE: Neon', x:true, thumb:'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400'},
+            {id:'r6-N-pW3t_M', t:'RESTRICTED: Pulse', x:true, thumb:'https://images.unsplash.com/photo-1514525253344-99a6d30086bb?w=400'},
+            {id:'h7GyMId8oXY', t:'VIP: Forbidden', x:true, thumb:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400'},
+            {id:'6RtTyWFAgO8', t:'UNCENSORED: Vibes', x:true, thumb:'https://images.unsplash.com/photo-1595760780346-f972eb49709f?w=400'}
         ];
 
         function toggleView(mode) {
             const grid = document.getElementById('main-grid');
             const head = document.getElementById('channel-header');
-            grid.innerHTML = '';
+            const mainScroll = document.getElementById('main-scroll');
             
-            document.getElementById('nav-home').classList.remove('active');
-            document.getElementById('nav-chan').classList.remove('active');
+            grid.innerHTML = '';
+            mainScroll.scrollTop = 0;
+            
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
 
             if(mode === 'home') {
                 head.style.display = 'none';
                 document.getElementById('nav-home').classList.add('active');
-                let html = '';
-                for(let i=0; i<1500; i++) {
-                    let v = homeVideos[i % homeVideos.length];
-                    html += createCard(v.id, `${v.t} #${i+1}`, v.v);
-                }
-                grid.innerHTML = html;
+                renderBatch(grid, homeVideos, config.homeCount);
             } else {
                 head.style.display = 'block';
                 document.getElementById('nav-chan').classList.add('active');
-                let html = '';
-                for(let i=0; i<500; i++) {
-                    let v = chanVideos[i % chanVideos.length];
-                    html += createCard(v.id, `${v.t} #${i+1}`, v.v, v.x, v.thumb);
-                }
-                grid.innerHTML = html;
+                renderBatch(grid, chanVideos, config.chanCount);
             }
         }
 
-        function createCard(id, t, v, x = false, customThumb = null) {
-            const thumbUrl = customThumb ? customThumb : `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-            return `
-                <div class="v-card" onclick="playVideo('${id}')">
+        // Оптимизированный рендеринг через фрагменты
+        function renderBatch(container, data, count) {
+            const fragment = document.createDocumentFragment();
+            for(let i=0; i<count; i++) {
+                const v = data[i % data.length];
+                const card = document.createElement('div');
+                card.className = 'v-card';
+                card.onclick = () => playVideo(v.id);
+                
+                const thumb = v.thumb ? v.thumb : `https://img.youtube.com/vi/${v.id}/mqdefault.jpg`;
+                
+                card.innerHTML = `
                     <div class="v-thumb">
-                        <img src="${thumbUrl}" loading="lazy">
-                        ${x ? '<div class="badge-18">18+</div>' : ''}
+                        <img src="${thumb}" loading="lazy">
+                        ${v.x ? '<div class="badge-18">18+</div>' : ''}
                     </div>
-                    <div class="v-title">${t}</div>
-                    <div style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:5px;">${v} views • 3D Core</div>
-                </div>
-            `;
+                    <div class="v-title">${v.t} #${i+1}</div>
+                `;
+                fragment.appendChild(card);
+                
+                // Чтобы не вешать браузер, отрисовываем пачками по 100
+                if (i % 100 === 0 && i !== 0) {
+                    container.appendChild(fragment);
+                }
+            }
+            container.appendChild(fragment);
         }
 
         function playVideo(id) {
-            document.getElementById('player-container').innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            document.getElementById('player-container').innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
             document.getElementById('overlay').style.display = 'flex';
         }
 
@@ -251,7 +207,19 @@
             document.getElementById('player-container').innerHTML = '';
         }
 
-        window.onload = () => toggleView('home');
+        // Создаем фоновые фигуры один раз
+        window.onload = () => {
+            const bg = document.getElementById('bg-layer');
+            for(let i=0; i<5; i++) {
+                const c = document.createElement('div');
+                c.className = 'cube';
+                c.style.left = Math.random() * 90 + '%';
+                c.style.top = Math.random() * 90 + '%';
+                c.style.animationDelay = (i * -2) + 's';
+                bg.appendChild(c);
+            }
+            toggleView('home');
+        };
     </script>
 </body>
 </html>
