@@ -63,22 +63,59 @@
             gap: 25px; contain: content;
         }
 
-        /* 3D Шапка канала */
-        .channel-info { display: none; margin-bottom: 30px; }
-        .banner-3d { 
-            height: 200px; width: 100%; background: #000; border-radius: 15px; 
-            position: relative; overflow: hidden; border: 1px solid #333;
-        }
-        .grid-3d {
-            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
-            background-image: linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px);
-            background-size: 40px 40px; transform: rotateX(60deg); animation: moveGrid 10s linear infinite; opacity: 0.05;
-            will-change: transform;
-        }
-        @keyframes moveGrid { from { transform: rotateX(60deg) translateY(0); } to { transform: rotateX(60deg) translateY(40px); } }
+        /* --- ОБНОВЛЕННАЯ 3D ШАПКА --- */
+        .channel-info { display: none; margin-bottom: 30px; perspective: 1000px; }
         
-        .banner-content { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 5; }
-        .banner-title { font-size: clamp(30px, 5vw, 50px); font-weight: 900; color: #fff; letter-spacing: 5px; text-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        .banner-3d { 
+            height: 220px; width: 100%; background: radial-gradient(circle at center, #222 0%, #000 100%); 
+            border-radius: 15px; position: relative; overflow: hidden; 
+            border: 1px solid #333; box-shadow: inset 0 0 50px rgba(0,0,0,1);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Эффект сетки в перспективе */
+        .grid-3d {
+            position: absolute; width: 200%; height: 200%; top: -20%; left: -50%;
+            background-image: 
+                linear-gradient(var(--accent) 1px, transparent 1px), 
+                linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+            background-size: 50px 50px; 
+            transform: rotateX(70deg) translateZ(-100px); 
+            animation: moveGrid 8s linear infinite; 
+            opacity: 0.15;
+            mask-image: linear-gradient(to top, rgba(0,0,0,1), transparent);
+        }
+
+        /* 3D Текст с тенями */
+        .banner-title { 
+            font-size: clamp(30px, 6vw, 60px); 
+            font-weight: 900; 
+            color: #fff; 
+            letter-spacing: 8px; 
+            text-transform: uppercase;
+            position: relative;
+            z-index: 10;
+            transform-style: preserve-3d;
+            animation: floating 4s ease-in-out infinite;
+            /* Эффект многослойного 3D текста */
+            text-shadow: 
+                0 1px 0 #ccc, 0 2px 0 #c5c5c5, 0 3px 0 #bbb, 0 4px 0 #b0b0b0, 
+                0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 
+                0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 
+                0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15),
+                0 0 30px var(--accent);
+        }
+
+        @keyframes moveGrid { 
+            from { transform: rotateX(70deg) translateY(0); } 
+            to { transform: rotateX(70deg) translateY(50px); } 
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0) rotateX(5deg); }
+            50% { transform: translateY(-15px) rotateX(-5deg); }
+        }
+        /* --- КОНЕЦ ОБНОВЛЕНИЯ ШАПКИ --- */
 
         /* Карточки видео */
         .v-card { 
@@ -126,7 +163,7 @@
             <div id="channel-header" class="channel-info">
                 <div class="banner-3d">
                     <div class="grid-3d"></div>
-                    <div class="banner-content"><div class="banner-title">BITSNIFFER <span style="color:var(--accent)">PRO</span></div></div>
+                    <div class="banner-title">BITSNIFFER <span style="color:var(--accent)">PRO</span></div>
                 </div>
             </div>
             <div class="grid" id="main-grid"></div>
