@@ -13,26 +13,22 @@
             --text-dim: #b2b2b2;
             --glow: 0 0 15px rgba(255, 153, 0, 0.3);
         }
-
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         
         body { 
             background: var(--bg); color: var(--text-main); font-family: 'Segoe UI', Arial, sans-serif; 
             margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; 
         }
-
         .bg-shapes {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: -1; transform: translateZ(0);
         }
-
         .cube {
             position: absolute; width: 60px; height: 60px;
             border: 1px solid rgba(255, 153, 0, 0.1);
             animation: rotateCube 25s infinite linear;
             will-change: transform;
         }
-
         @keyframes rotateCube {
             from { transform: rotate(0deg) scale(1); }
             to { transform: rotate(360deg) scale(1.2); }
@@ -43,25 +39,21 @@
             display: flex; align-items: center; justify-content: space-between; 
             padding: 0 25px; box-shadow: var(--glow); z-index: 1000; 
         }
-
         .logo { font-size: 26px; font-weight: 900; color: #000; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .logo span:first-child { color: #fff; }
         .logo span:last-child { background: var(--accent); padding: 2px 6px; border-radius: 4px; }
-
         .wrapper { display: flex; flex: 1; overflow: hidden; }
         
         nav { width: 260px; background: var(--surface); border-right: 1px solid rgba(255, 255, 255, 0.05); z-index: 10; }
         .nav-link { padding: 15px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; font-weight: 600; color: var(--text-dim); }
         .nav-link:hover, .nav-link.active { background: rgba(255, 153, 0, 0.1); color: var(--accent); }
         .nav-link.active { box-shadow: inset 4px 0 0 var(--accent); }
-
         main { flex: 1; padding: 20px; overflow-y: auto; position: relative; scroll-behavior: smooth; background: #0f0f0f; }
         
         .grid { 
             display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
             gap: 25px; contain: content;
         }
-
         /* 3D ШАПКА */
         .channel-info { display: none; margin-bottom: 30px; perspective: 1000px; }
         .banner-3d { 
@@ -82,10 +74,8 @@
             position: relative; z-index: 10; transform-style: preserve-3d; animation: floating 4s ease-in-out infinite;
             text-shadow: 0 1px 0 #ccc, 0 2px 0 #c5c5c5, 0 5px 10px rgba(0,0,0,.25), 0 0 30px var(--accent);
         }
-
         @keyframes moveGrid { from { transform: rotateX(70deg) translateY(0); } to { transform: rotateX(70deg) translateY(50px); } }
         @keyframes floating { 0%, 100% { transform: translateY(0) rotateX(5deg); } 50% { transform: translateY(-15px) rotateX(-5deg); } }
-
         /* КАРТОЧКИ С ЭФФЕКТОМ СКРЫТОГО КОНТЕНТА */
         .v-card { cursor: pointer; position: relative; transition: 0.3s; }
         .v-card:hover { transform: translateY(-5px); }
@@ -98,10 +88,9 @@
         /* Автоматический блюр для видео с пометкой +18 */
         .v-card.is-x .v-thumb img { filter: blur(20px) grayscale(0.5); }
         .v-card.is-x:hover .v-thumb img { filter: blur(0) grayscale(0); }
-
         .v-title { margin-top: 10px; font-size: 14px; font-weight: bold; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .badge-18 { position: absolute; bottom: 8px; right: 8px; background: var(--accent); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; z-index: 5; }
-
+        .preview-18 { position: absolute; top: 0; left: 0; width: 50%; height: auto; z-index: 6; pointer-events: none; }
         /* PLAYER OVERLAY */
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(10px); }
         .player-wrapper { width: 95%; max-width: 1100px; aspect-ratio: 16/9; border: 2px solid var(--accent); background: #000; box-shadow: 0 0 50px rgba(255,153,0,0.2); }
@@ -113,20 +102,16 @@
     </style>
 </head>
 <body>
-
     <div class="bg-shapes" id="bg-layer"></div>
-
     <header>
         <div class="logo" onclick="toggleView('home')"><span>HACKPACK</span><span>TUBE</span></div>
         <div style="color:var(--accent); font-weight:bold; font-size: 13px;"><i class="fas fa-crown"></i> PREMIUM TERMINAL</div>
     </header>
-
     <div class="wrapper">
         <nav>
             <div class="nav-link active" id="nav-home" onclick="toggleView('home')"><i class="fas fa-home"></i> Главная</div>
             <div class="nav-link" id="nav-chan" onclick="toggleView('chan')"><i class="fas fa-video"></i> Мой канал (+18)</div>
         </nav>
-
         <main id="main-scroll">
             <div id="channel-header" class="channel-info">
                 <div class="banner-3d">
@@ -137,12 +122,10 @@
             <div class="grid" id="main-grid"></div>
         </main>
     </div>
-
     <div id="overlay">
-        <div class="close-btn" onclick="closePlayer()">[ ЗАКРЫТЬ X ]</div>
+        <div class="close-btn" onclick="closePlayer()">\[ ЗАКРЫТЬ X \]</div>
         <div class="player-wrapper" id="player-container"></div>
     </div>
-
     <script>
         const config = { homeCount: 1500, chanCount: 500 };
         const homeVideos = [
@@ -150,75 +133,5 @@
             {id:'kJQP7kiw5Fk', t:'AI Evolution Report'}, {id:'V-_O7nl0Ii0', t:'Cyber Security 2026'},
             {id:'y6120QOlsfU', t:'Encrypted Data Flow'}, {id:'_u7Md_glvYQ', t:'Darknet Archives'}
         ];
-
         const chanVideos = [
-            {id:'p_8_vN7rX60', t:'PRIVATE: Neon City After Dark', x:true, thumb:'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400'},
-            {id:'r6-N-pW3t_M', t:'RESTRICTED: Pulse Midnight', x:true, thumb:'https://images.unsplash.com/photo-1514525253344-99a6d30086bb?w=400'},
-            {id:'h7GyMId8oXY', t:'VIP: Forbidden Session', x:true, thumb:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400'},
-            {id:'6RtTyWFAgO8', t:'UNCENSORED: Urban Night', x:true, thumb:'https://images.unsplash.com/photo-1595760780346-f972eb49709f?w=400'}
-        ];
-
-        function toggleView(mode) {
-            const grid = document.getElementById('main-grid');
-            const head = document.getElementById('channel-header');
-            const mainScroll = document.getElementById('main-scroll');
-            grid.innerHTML = '';
-            mainScroll.scrollTop = 0;
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-
-            if(mode === 'home') {
-                head.style.display = 'none';
-                document.getElementById('nav-home').classList.add('active');
-                renderBatch(grid, homeVideos, config.homeCount);
-            } else {
-                head.style.display = 'block';
-                document.getElementById('nav-chan').classList.add('active');
-                renderBatch(grid, chanVideos, config.chanCount);
-            }
-        }
-
-        function renderBatch(container, data, count) {
-            const fragment = document.createDocumentFragment();
-            for(let i=0; i<count; i++) {
-                const v = data[i % data.length];
-                const card = document.createElement('div');
-                card.className = v.x ? 'v-card is-x' : 'v-card';
-                card.onclick = () => playVideo(v.id);
-                const thumb = v.thumb ? v.thumb : `https://img.youtube.com/vi/${v.id}/mqdefault.jpg`;
-                card.innerHTML = `
-                    <div class="v-thumb">
-                        <img src="${thumb}" loading="lazy">
-                        ${v.x ? '<div class="badge-18">18+</div>' : ''}
-                    </div>
-                    <div class="v-title">${v.t} #${i+1}</div>
-                `;
-                fragment.appendChild(card);
-            }
-            container.appendChild(fragment);
-        }
-
-        function playVideo(id) {
-            document.getElementById('player-container').innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            document.getElementById('overlay').style.display = 'flex';
-        }
-
-        function closePlayer() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('player-container').innerHTML = '';
-        }
-
-        window.onload = () => {
-            const bg = document.getElementById('bg-layer');
-            for(let i=0; i<5; i++) {
-                const c = document.createElement('div');
-                c.className = 'cube';
-                c.style.left = Math.random() * 90 + '%';
-                c.style.top = Math.random() * 90 + '%';
-                c.style.animationDelay = (i * -2) + 's';
-                bg.appendChild(c);
-            }
-            toggleView('home');
-        };
-    </script>
-</body>
-</html>
+ 
