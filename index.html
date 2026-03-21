@@ -1,222 +1,217 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>HACKPACKTUBE | PRIVATE TERMINAL</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --accent: #ff9900;
-            --bg: #000000;
-            --surface: #1b1b1b;
-            --text-main: #ffffff;
-            --text-dim: #b2b2b2;
-            --glow: 0 0 15px rgba(255, 153, 0, 0.3);
-        }
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        
-        body { 
-            background: var(--bg); color: var(--text-main); font-family: 'Segoe UI', Arial, sans-serif; 
-            margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; 
-        }
-        .bg-shapes {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: -1; transform: translateZ(0);
-        }
-        .cube {
-            position: absolute; width: 60px; height: 60px;
-            border: 1px solid rgba(255, 153, 0, 0.1);
-            animation: rotateCube 25s infinite linear;
-            will-change: transform;
-        }
-        @keyframes rotateCube {
-            from { transform: rotate(0deg) scale(1); }
-            to { transform: rotate(360deg) scale(1.2); }
-        }
-        
-        header { 
-            height: 65px; background: var(--surface); border-bottom: 2px solid var(--accent); 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 25px; box-shadow: var(--glow); z-index: 1000; 
-        }
-        .logo { font-size: 26px; font-weight: 900; color: #000; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .logo span:first-child { color: #fff; }
-        .logo span:last-child { background: var(--accent); padding: 2px 6px; border-radius: 4px; }
-        .wrapper { display: flex; flex: 1; overflow: hidden; }
-        
-        nav { width: 280px; background: var(--surface); border-right: 1px solid rgba(255, 255, 255, 0.05); z-index: 10; }
-        .nav-link { padding: 15px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; font-weight: 600; color: var(--text-dim); }
-        .nav-link:hover, .nav-link.active { background: rgba(255, 153, 0, 0.1); color: var(--accent); }
-        .nav-link.active { box-shadow: inset 4px 0 0 var(--accent); }
+import React, { useState, useEffect } from 'react';
+import { Home, Video, Crown, X, ArrowUpRight } from 'lucide-react';
 
-        /* Стили для вертикального видео в меню */
-        .side-video-container {
-            width: 40px;
-            height: 71px; /* Пропорция 9:16 */
-            background: #000;
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid var(--accent);
-            flex-shrink: 0;
-        }
-        .side-video-container video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+const HACKPACK_TUBE = () => {
+  const [activeTab, setActiveTab] = useState<'home' | 'chan'>('home');
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
-        main { flex: 1; padding: 20px; overflow-y: auto; position: relative; scroll-behavior: smooth; background: #0f0f0f; }
-        
-        .grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 25px; contain: content;
+  // Конфигурация видео
+  const homeVideos = [
+    { id: 'dQw4w9WgXcQ', t: 'System Update 2.0' },
+    { id: 'jfKfPfyJRdk', t: 'Global Traffic Analysis' },
+    { id: 'kJQP7kiw5Fk', t: 'AI Evolution Report' },
+    { id: 'V-_O7nl0Ii0', t: 'Cyber Security 2026' },
+  ];
+
+  const chanVideos = [
+    { id: 'p_8_vN7rX60', t: 'PRIVATE: Neon City After Dark', x: true },
+    { id: 'r6-N-pW3t_M', t: 'RESTRICTED: Pulse Midnight', x: true },
+    { id: 'h7GyMId8oXY', t: 'VIP: Forbidden Session', x: true },
+  ];
+
+  // Компонент 3-секундного вертикального видео (9:16) с ростом цен
+  const PriceGrowthVideo = () => (
+    <div className="relative w-10 h-[71px] bg-black border border-[#ff9900] rounded overflow-hidden flex-shrink-0 mr-3 shadow-[0_0_10px_rgba(255,153,0,0.5)]">
+      {/* Сетка графика */}
+      <div className="absolute inset-0 flex flex-col justify-between opacity-20">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="w-full h-[1px] bg-white" />
+        ))}
+      </div>
+      
+      {/* Анимированный график роста рубля */}
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 40 71">
+        <path
+          d="M 0 71 Q 10 65, 20 40 T 40 5"
+          fill="none"
+          stroke="#ff9900"
+          strokeWidth="3"
+          className="animate-[drawPath_3s_infinite_linear]"
+          style={{
+            strokeDasharray: 150,
+            strokeDashoffset: 150,
+          }}
+        />
+        <circle cx="40" cy="5" r="3" fill="red" className="animate-pulse" />
+      </svg>
+
+      {/* Индикатор валюты */}
+      <div className="absolute top-1 left-1 text-[8px] font-bold text-[#ff9900] animate-bounce">
+        ₽↑
+      </div>
+
+      <style>{`
+        @keyframes drawPath {
+          0% { stroke-dashoffset: 150; opacity: 0; }
+          20% { opacity: 1; }
+          80% { stroke-dashoffset: 0; opacity: 1; }
+          100% { stroke-dashoffset: 0; opacity: 0; }
         }
-        .channel-info { display: none; margin-bottom: 30px; perspective: 1000px; }
-        .banner-3d { 
-            height: 220px; width: 100%; background: radial-gradient(circle at center, #222 0%, #000 100%); 
-            border-radius: 15px; position: relative; overflow: hidden; 
-            border: 1px solid #333; box-shadow: inset 0 0 50px rgba(0,0,0,1);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .grid-3d {
-            position: absolute; width: 200%; height: 200%; top: -20%; left: -50%;
-            background-image: linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px);
-            background-size: 50px 50px; transform: rotateX(70deg) translateZ(-100px); 
-            animation: moveGrid 8s linear infinite; opacity: 0.15;
-            mask-image: linear-gradient(to top, rgba(0,0,0,1), transparent);
-        }
-        .banner-title { 
-            font-size: clamp(30px, 6vw, 60px); font-weight: 900; color: #fff; letter-spacing: 8px; text-transform: uppercase;
-            position: relative; z-index: 10; transform-style: preserve-3d; animation: floating 4s ease-in-out infinite;
-            text-shadow: 0 1px 0 #ccc, 0 2px 0 #c5c5c5, 0 5px 10px rgba(0,0,0,.25), 0 0 30px var(--accent);
-        }
-        @keyframes moveGrid { from { transform: rotateX(70deg) translateY(0); } to { transform: rotateX(70deg) translateY(50px); } }
-        @keyframes floating { 0%, 100% { transform: translateY(0) rotateX(5deg); } 50% { transform: translateY(-15px) rotateX(-5deg); } }
-        
-        .v-card { cursor: pointer; position: relative; transition: 0.3s; }
-        .v-card:hover { transform: translateY(-5px); }
-        .v-thumb { 
-            width: 100%; aspect-ratio: 16/9; background: #1a1a1a; border-radius: 10px; 
-            border: 1px solid #333; overflow: hidden; position: relative;
-        }
-        .v-thumb img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s ease; }
-        
-        .v-card.is-x .v-thumb img { filter: blur(20px) grayscale(0.5); }
-        .v-card.is-x:hover .v-thumb img { filter: blur(0) grayscale(0); }
-        .v-title { margin-top: 10px; font-size: 14px; font-weight: bold; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .badge-18 { position: absolute; bottom: 8px; right: 8px; background: var(--accent); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; z-index: 5; }
-        
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(10px); }
-        .player-wrapper { width: 95%; max-width: 1100px; aspect-ratio: 16/9; border: 2px solid var(--accent); background: #000; box-shadow: 0 0 50px rgba(255,153,0,0.2); }
-        iframe { width: 100%; height: 100%; border: none; }
-        .close-btn { margin-bottom: 10px; color: var(--accent); cursor: pointer; font-size: 16px; font-weight: bold; background: rgba(255,153,0,0.1); padding: 5px 15px; border-radius: 20px; }
-        
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
-    </style>
-</head>
-<body>
-    <div class="bg-shapes" id="bg-layer"></div>
-    <header>
-        <div class="logo" onclick="toggleView('home')"><span>HACKPACK</span><span>TUBE</span></div>
-        <div style="color:var(--accent); font-weight:bold; font-size: 13px;"><i class="fas fa-crown"></i> PREMIUM TERMINAL</div>
-    </header>
-    <div class="wrapper">
-        <nav>
-            <div class="nav-link active" id="nav-home" onclick="toggleView('home')"><i class="fas fa-home"></i> Главная</div>
-            
-            <div class="nav-link" id="nav-chan" onclick="toggleView('chan')">
-                <div class="side-video-container">
-                    <video autoplay loop muted playsinline>
-                        <source src="ruble_growth.mp4" type="video/md4">
-                        </video>
-                </div>
-                <span>Мой канал (+18)</span>
-            </div>
+      `}</style>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col h-screen bg-black text-white font-sans overflow-hidden">
+      {/* Background Cubes */}
+      <div className="fixed inset-0 pointer-events-none opacity-20">
+        {[...Array(5)].map((_, i) => (
+          <div 
+            key={i}
+            className="absolute w-16 h-16 border border-[#ff9900]/30 animate-[spin_25s_linear_infinite]"
+            style={{
+              left: `${Math.random() * 90}%`,
+              top: `${Math.random() * 90}%`,
+              animationDelay: `${i * -2}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Header */}
+      <header className="h-16 bg-[#1b1b1b] border-b-2 border-[#ff9900] flex items-center justify-between px-6 shadow-[0_0_20px_rgba(255,153,0,0.4)] z-50">
+        <div className="text-2xl font-black cursor-pointer flex items-center gap-1" onClick={() => setActiveTab('home')}>
+          <span className="text-white">HACKPACK</span>
+          <span className="bg-[#ff9900] text-black px-1.5 rounded">TUBE</span>
+        </div>
+        <div className="text-[#ff9900] font-bold text-sm flex items-center gap-2 tracking-tighter">
+          <Crown size={16} fill="#ff9900" /> PREMIUM TERMINAL
+        </div>
+      </header>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <nav className="w-72 bg-[#1b1b1b] border-r border-white/5 z-10 flex flex-col py-4">
+          <div 
+            onClick={() => setActiveTab('home')}
+            className={`px-6 py-4 flex items-center gap-4 cursor-pointer transition-all duration-300 ${
+              activeTab === 'home' 
+              ? 'bg-[#ff99001a] text-[#ff9900] border-l-4 border-[#ff9900]' 
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Home size={22} /> 
+            <span className="font-bold text-lg">Главная</span>
+          </div>
+
+          <div 
+            onClick={() => setActiveTab('chan')}
+            className={`px-6 py-4 flex items-center cursor-pointer transition-all duration-300 mt-2 ${
+              activeTab === 'chan' 
+              ? 'bg-[#ff99001a] text-[#ff9900] border-l-4 border-[#ff9900]' 
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <PriceGrowthVideo />
+            <span className="font-bold text-lg">Мой канал (+18)</span>
+          </div>
         </nav>
-        <main id="main-scroll">
-            <div id="channel-header" class="channel-info">
-                <div class="banner-3d">
-                    <div class="grid-3d"></div>
-                    <div class="banner-title">BITSNIFFER <span style="color:var(--accent)">PRO</span></div>
+
+        {/* Main Workspace */}
+        <main className="flex-1 bg-[#0f0f0f] p-6 overflow-y-auto relative scrollbar-thin scrollbar-thumb-[#ff9900]">
+          {activeTab === 'chan' && (
+            <div className="mb-8 [perspective:1000px]">
+              <div className="h-64 w-full bg-[radial-gradient(circle_at_center,#222_0%,#000_100%)] rounded-2xl relative overflow-hidden border border-white/10 flex flex-col items-center justify-center">
+                <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#ff9900_1px,transparent_1px),linear-gradient(90deg,#ff9900_1px,transparent_1px)] bg-[length:40px_40px] [transform:rotateX(70deg)_translateY(20px)] animate-[pulse_4s_infinite]" />
+                <h1 className="text-6xl font-black tracking-widest text-white drop-shadow-[0_0_40px_#ff9900] animate-[float_4s_infinite_ease-in-out]">
+                  BITSNIFFER <span className="text-[#ff9900]">PRO</span>
+                </h1>
+                <div className="mt-4 flex items-center gap-2 text-xs font-mono text-[#ff9900] opacity-70">
+                  <span className="animate-pulse">●</span> ENCRYPTED CONNECTION ESTABLISHED
                 </div>
+              </div>
             </div>
-            <div class="grid" id="main-grid"></div>
-        </main>
-    </div>
-    <div id="overlay">
-        <div class="close-btn" onclick="closePlayer()">[ ЗАКРЫТЬ X ]</div>
-        <div class="player-wrapper" id="player-container"></div>
-    </div>
-    <script>
-        const config = { homeCount: 1500, chanCount: 500 };
-        const homeVideos = [
-            {id:'dQw4w9WgXcQ', t:'System Update 2.0'}, {id:'jfKfPfyJRdk', t:'Global Traffic Analysis'},
-            {id:'kJQP7kiw5Fk', t:'AI Evolution Report'}, {id:'V-_O7nl0Ii0', t:'Cyber Security 2026'},
-            {id:'y6120QOlsfU', t:'Encrypted Data Flow'}, {id:'_u7Md_glvYQ', t:'Darknet Archives'}
-        ];
-        const chanVideos = [
-            {id:'p_8_vN7rX60', t:'PRIVATE: Neon City After Dark', x:true},
-            {id:'r6-N-pW3t_M', t:'RESTRICTED: Pulse Midnight', x:true},
-            {id:'h7GyMId8oXY', t:'VIP: Forbidden Session', x:true},
-            {id:'6RtTyWFAgO8', t:'UNCENSORED: Urban Night', x:true}
-        ];
-        function toggleView(mode) {
-            const grid = document.getElementById('main-grid');
-            const head = document.getElementById('channel-header');
-            const mainScroll = document.getElementById('main-scroll');
-            grid.innerHTML = '';
-            mainScroll.scrollTop = 0;
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            if(mode === 'home') {
-                head.style.display = 'none';
-                document.getElementById('nav-home').classList.add('active');
-                renderBatch(grid, homeVideos, config.homeCount);
-            } else {
-                head.style.display = 'block';
-                document.getElementById('nav-chan').classList.add('active');
-                renderBatch(grid, chanVideos, config.chanCount);
-            }
-        }
-        function renderBatch(container, data, count) {
-            const fragment = document.createDocumentFragment();
-            for(let i=0; i<count; i++) {
-                const v = data[i % data.length];
-                const card = document.createElement('div');
-                card.className = v.x ? 'v-card is-x' : 'v-card';
-                card.onclick = () => playVideo(v.id);
-                const thumbSrc = v.x ? '4.png' : (v.thumb ? v.thumb : `https://img.youtube.com/vi/${v.id}/mqdefault.jpg`);
-                card.innerHTML = `
-                    <div class="v-thumb">
-                        <img src="${thumbSrc}" loading="lazy" alt="Video Preview">
-                        ${v.x ? '<div class="badge-18">18+</div>' : ''}
+          )}
+
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-8">
+            {(activeTab === 'home' ? [...Array(24)] : [...Array(16)]).map((_, i) => {
+              const video = activeTab === 'home' 
+                ? homeVideos[i % homeVideos.length] 
+                : chanVideos[i % chanVideos.length];
+              
+              return (
+                <div 
+                  key={i} 
+                  className="group cursor-pointer transform transition-transform duration-300 hover:-translate-y-2"
+                  onClick={() => setSelectedVideo(video.id)}
+                >
+                  <div className="relative aspect-video bg-[#1a1a1a] rounded-xl overflow-hidden border border-white/5 group-hover:border-[#ff9900/50]">
+                    <img 
+                      src={video.x ? "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400" : `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
+                      alt="preview"
+                      className={`w-full h-full object-cover transition-all duration-700 ${
+                        video.x ? 'blur-2xl grayscale brightness-50 group-hover:blur-0 group-hover:grayscale-0 group-hover:brightness-100' : 'group-hover:scale-110'
+                      }`}
+                    />
+                    {video.x && (
+                      <div className="absolute bottom-2 right-2 bg-[#ff9900] text-black text-[10px] font-black px-2 py-0.5 rounded shadow-lg z-10">
+                        18+
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                       <ArrowUpRight className="text-[#ff9900]" size={40} />
                     </div>
-                    <div class="v-title">${v.t} #${i+1}</div>
-                `;
-                fragment.appendChild(card);
-            }
-            container.appendChild(fragment);
+                  </div>
+                  <div className="mt-4">
+                    <div className="font-bold text-sm text-gray-100 line-clamp-2 group-hover:text-[#ff9900] transition-colors">
+                      {video.t} #{i + 1}
+                    </div>
+                    <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter font-mono">
+                      {Math.floor(Math.random() * 900) + 100}K views • 2 hours ago
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </main>
+      </div>
+
+      {/* Fullscreen Player Overlay */}
+      {selectedVideo && (
+        <div className="fixed inset-0 bg-black/98 backdrop-blur-xl z-[9999] flex flex-col items-center justify-center p-4">
+          <button 
+            onClick={() => setSelectedVideo(null)}
+            className="mb-6 flex items-center gap-2 text-[#ff9900] font-black bg-[#ff9900]/10 px-6 py-3 rounded-full border border-[#ff9900]/40 hover:bg-[#ff9900] hover:text-black transition-all"
+          >
+            <X size={24} /> [ DISCONNECT TERMINAL ]
+          </button>
+          <div className="w-full max-w-6xl aspect-video border-2 border-[#ff9900] shadow-[0_0_100px_rgba(255,153,0,0.3)] rounded-lg overflow-hidden bg-black">
+            <iframe 
+              className="w-full h-full"
+              src={`https://www.youtube.com/embed/${selectedVideo}?autoplay=1&rel=0&showinfo=0`}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0) rotateX(5deg); }
+          50% { transform: translateY(-15px) rotateX(-5deg); }
         }
-        function playVideo(id) {
-            document.getElementById('player-container').innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            document.getElementById('overlay').style.display = 'flex';
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
         }
-        function closePlayer() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('player-container').innerHTML = '';
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #ff9900;
+          border-radius: 10px;
         }
-        window.onload = () => {
-            const bg = document.getElementById('bg-layer');
-            for(let i=0; i<5; i++) {
-                const c = document.createElement('div');
-                c.className = 'cube';
-                c.style.left = Math.random() * 90 + '%';
-                c.style.top = Math.random() * 90 + '%';
-                c.style.animationDelay = (i * -2) + 's';
-                bg.appendChild(c);
-            }
-            toggleView('home');
-        };
-    </script>
-</body>
-</html>
+      `}</style>
+    </div>
+  );
+};
+
+export default HACKPACK_TUBE;
